@@ -1,3 +1,4 @@
+//added bonus points based on number of goals completed to the formulas
 class Program
 {
     static void Main(string[] args)
