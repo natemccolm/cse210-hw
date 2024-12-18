@@ -1,8 +1,9 @@
-public class EternalGoal: Goal {
-
+public class EternalGoal : Goal
+{
     public EternalGoal(string name, string description, int points)
-        :base (name, description, points){
-        }
+        : base(name, description, points)
+    {
+    }
 
     public override void DisplayGoal()
     {
@@ -12,11 +13,15 @@ public class EternalGoal: Goal {
 
     public override void RecordProgress()
     {
-        base.RecordProgress();
-        Console.WriteLine($"You earned {Points} points for completing this progress!");
+        if (!IsComplete)  
+        {
+            MarkComplete();
+            AddPoints(Points);  
+            Console.WriteLine($"{Name} is now completed! You've earned {Points} points.");
+        }
+        else
+        {
+            Console.WriteLine($"{Name} has already been completed.");
+        }
     }
-
-    
-
-
 }

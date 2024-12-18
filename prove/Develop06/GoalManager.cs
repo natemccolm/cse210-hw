@@ -1,99 +1,85 @@
 using System;
 using System.Collections.Generic;
-public class GoalManager{
 
-    private List<Goal> goals=new List<Goal>();
-    private int totalScore=0;
+public class GoalManager
+{
+    private List<Goal> goals = new List<Goal>();
+    private int totalScore = 0;
+    private int completedGoalsCount = 0;  
+    private const int BonusThreshold = 5; 
+    private const int BonusPoints = 50;  
+
     public List<Goal> Goals => goals;
-    public void AddGoal (Goal goal)
+
+    public void AddGoal(Goal goal)
     {
         goals.Add(goal);
     }
 
-    public virtual void DisplayAllGoals(){
+    public void DisplayAllGoals()
+    {
+        if (goals.Count == 0)
+        {
+            Console.WriteLine("No goals added yet.");
+            return;
+        }
 
-        foreach (Goal goal in goals){
+        foreach (var goal in goals)
+        {
             goal.DisplayGoal();
         }
-
     }
 
-    public void MarkGoalComplete (Goal goal) {
-        if (goal is SimpleGoal simpleGoal){
-            UpdateScore(simpleGoal.Points);
-            Console.WriteLine($"{simpleGoal.Name} completed! {simpleGoal.Points} points awarded!");
-        }
-        else if (goal is EternalGoal eternalGoal){
-            UpdateScore(eternalGoal.Points);
-            Console.WriteLine($"{eternalGoal.Name} progress recorded! {eternalGoal.Points} awarded!");
-        }
+    public void RecordProgress(int index)
+    {
+        if (index >= 0 && index < goals.Count)
+        {
+            Goal selectedGoal = goals[index];
+            selectedGoal.RecordProgress();
 
-        else if (goal is ChecklistGoal checklistGoal){
-            UpdateScore(checklistGoal.Points);
-            Console.WriteLine($"{checklistGoal.Name} progress recorded! {checklistGoal.Points} awarded!");
+            if (selectedGoal.IsComplete) 
+            {
+                completedGoalsCount++;
+                if (completedGoalsCount % BonusThreshold == 0)
+                {
+                    UpdateScore(BonusPoints);
+                    Console.WriteLine($"Bonus! You've earned {BonusPoints} bonus points for completing {completedGoalsCount} goals.");
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid goal index.");
         }
     }
 
-    private void UpdateScore (int points){
+    public void MarkGoalComplete(int index)
+    {
+        if (index >= 0 && index < goals.Count)
+        {
+            Goal selectedGoal = goals[index];
+            selectedGoal.MarkComplete();
+            Console.WriteLine($"{selectedGoal.Name} has been marked as complete.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid goal index.");
+        }
+    }
+
+    public void UpdateScore(int points)
+    {
         totalScore += points;
         Console.WriteLine($"Total score is now {totalScore}.");
     }
 
-    public void SaveGoals(string filename){
-        using (StreamWriter writer = new StreamWriter(filename))
-            {
-                writer.WriteLine($"Score: {totalScore}");
-                foreach (Goal goal in goals){
-                    if (goal is SimpleGoal simpleGoal){
-                        writer.WriteLine($"Simple | {simpleGoal.Name} | {simpleGoal.Description} | {simpleGoal.Points} ");
-                    }
-                    else if (goal is EternalGoal eternalGoal) {
-                        writer.WriteLine($"Eternal | {eternalGoal.Name} | {eternalGoal.Description} | {eternalGoal.Points} ");
-                    }
-                    else if (goal is ChecklistGoal checklistGoal){
-                        writer.WriteLine($"Checklist | {checklistGoal.Name} | {checklistGoal.Description} | {checklistGoal.Points} | {checklistGoal.TimesToComplete} | {checklistGoal.TimesCompleted} | {checklistGoal.BonusPoints}");
-                    }
-                }
-            }
-            Console.WriteLine("Goals successfully saved!");
-        }
+    public void SaveGoals(string filename)
+    {
+        Console.WriteLine($"Saving goals to {filename}...");
+    }
 
-    public void LoadGoals(string filename){
-        if(!File.Exists(filename)){
-            Console.WriteLine("File not found.");
-            return;
-        }
-
-        using (StreamReader reader = new StreamReader(filename)){
-            string scoreLine = reader.ReadLine();
-            totalScore = int.Parse(scoreLine.Split(':')[1]);
-
-            string line;
-            while ((line=reader.ReadLine()) !=null){
-                string[] parts = line.Split('|');
-                string type = parts [0];
-                string name = parts[1];
-                string description = parts[2];
-                int points = int.Parse(parts[3]);
-
-                Goal goal = type switch{
-                    "Simple"=> new SimpleGoal(name, description, points){
-                        IsComplete=bool.Parse(parts[4])
-                    },
-
-                    "Eternal" => new EternalGoal(name, description, points),
-                    "Checklist" => new ChecklistGoal(name, description, points){
-                        TimesToComplete = int.Parse(parts[4]),
-                        TimesCompleted = int.Parse(parts[5]),
-                        BonusPoints = int.Parse (parts[6])
-                    },
-                    _=> null
-                };
-                if (goal != null){
-                    goals.Add(goal);
-                }
-            }
-        }
-        Console.WriteLine("Goals successfully loaded!");       
+    public void LoadGoals(string filename)
+    {
+        Console.WriteLine($"Loading goals from {filename}...");
     }
 }

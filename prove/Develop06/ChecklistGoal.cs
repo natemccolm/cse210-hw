@@ -1,44 +1,47 @@
-public class ChecklistGoal : Goal {
+public class ChecklistGoal : Goal
+{
+    private int _timesToComplete;
+    private int _timesCompleted;
+    private int _bonusPoints;
 
-    public int TimesToComplete {get;set;}
-    public int TimesCompleted {get;set;}
-    public int BonusPoints {get;set;}
+    public int TimesToComplete { get => _timesToComplete; set => _timesToComplete = value; }
+    public int TimesCompleted { get => _timesCompleted; set => _timesCompleted = value; }
+    public int BonusPoints { get => _bonusPoints; set => _bonusPoints = value; }
 
     public ChecklistGoal(string name, string description, int points)
-        : base(name, description, points){
+        : base(name, description, points)
+    {
+        _timesToComplete = 0;
+        _timesCompleted = 0;
+        _bonusPoints = 0;
     }
 
     public override void DisplayGoal()
     {
         base.DisplayGoal();
-        Console.WriteLine($"This is a checklist goal. Completed {TimesCompleted}/{TimesToComplete}");
+        Console.WriteLine("This is a checklist goal.");
+        Console.WriteLine($"Times to complete: {_timesToComplete}");
+        Console.WriteLine($"Times completed: {_timesCompleted}");
+        Console.WriteLine($"Bonus points: {_bonusPoints}");
     }
 
     public override void RecordProgress()
     {
-        base.RecordProgress();
-        TimesCompleted++;
-        Console.WriteLine($"Progress recorded! {TimesCompleted}/{TimesToComplete} complete");
-
-        if (TimesCompleted > TimesToComplete)
+        if (!IsComplete)  
         {
-            Console.WriteLine($"Congrats, you have exceeded your goal by {TimesCompleted - TimesToComplete} time(s)!");
-            Console.WriteLine($"That is {TimesCompleted / (double)TimesToComplete * 100:F2}% over your goal!");
-            Points += BonusPoints * 2;
-            Console.WriteLine($"You've earned {Points}, which includes {BonusPoints * 2} for exceeding your goal!");
-        }
-        else if (TimesCompleted == TimesToComplete)
-        {
-            Console.WriteLine($"Congrats, you have met your goal of {TimesToComplete} times!");
-            Points += BonusPoints;
-            Console.WriteLine($"You've earned {Points}, which includes {BonusPoints} for hitting your goal!");
+            _timesCompleted++;
+            Console.WriteLine($"{Name} has been completed {_timesCompleted} times.");
+            
+            if (_timesCompleted >= _timesToComplete)
+            {
+                MarkComplete();
+                AddPoints(Points + _bonusPoints);  
+                Console.WriteLine($"{Name} is now completed! You've earned {Points + _bonusPoints} points.");
+            }
         }
         else
         {
-            Console.WriteLine($"Keep on going! You are only {TimesToComplete - TimesCompleted} instances away from hitting your goal!");
-            Console.WriteLine($"That's only {100 - (TimesCompleted / (double)TimesToComplete * 100):F2}% of your goal left to go!");
+            Console.WriteLine($"{Name} has already been completed.");
         }
     }
-
-
 }

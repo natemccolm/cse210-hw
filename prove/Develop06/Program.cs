@@ -1,5 +1,3 @@
-//added further breakdown of how many instances left on checklist, as well as percentages of how far through the goal number they had come.
-
 class Program
 {
     static void Main(string[] args)
@@ -12,41 +10,46 @@ class Program
             Console.WriteLine("Menu:");
             Console.WriteLine("1. Add a Goal");
             Console.WriteLine("2. Display All Goals");
-            Console.WriteLine("3. Mark Goal as Complete");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("3. Record Progress for a Goal");
+            Console.WriteLine("4. Mark Goal as Complete");
+            Console.WriteLine("5. Save Goals");
+            Console.WriteLine("6. Load Goals");
+            Console.WriteLine("7. Exit");
 
             choice = Console.ReadLine();
 
             switch (choice)
             {
                 case "1":
-                    AddGoal(goalManager);  
+                    AddGoal(goalManager);
                     break;
                 case "2":
                     goalManager.DisplayAllGoals();
                     break;
                 case "3":
-                    Console.WriteLine("Enter the index number of the goal to mark as complete: ");
-                    int index = int.Parse(Console.ReadLine());
-                    if (index >=0 && index<goalManager.Goals.Count)
-                    {
-                        Goal selectedGoal=goalManager.Goals[index];
-                        goalManager.MarkGoalComplete(selectedGoal);
-                    }
-                    else {
-                        Console.WriteLine("Invalid insdex. Please try again.");
-                    }
-
-
+                    RecordGoalProgress(goalManager);
                     break;
                 case "4":
+                    MarkGoalComplete(goalManager);
+                    break;
+                case "5":
+                    Console.WriteLine("Enter the filename to save goals: ");
+                    string saveFilename = Console.ReadLine();
+                    goalManager.SaveGoals(saveFilename);
+                    break;
+                case "6":
+                    Console.WriteLine("Enter the filename to load goals: ");
+                    string loadFilename = Console.ReadLine();
+                    goalManager.LoadGoals(loadFilename);
+                    break;
+                case "7":
                     Console.WriteLine("Goodbye!");
                     break;
                 default:
                     Console.WriteLine("Invalid choice. Try again.");
                     break;
             }
-        } while (choice != "4");
+        } while (choice != "7");
     }
 
     static void AddGoal(GoalManager goalManager)
@@ -85,7 +88,38 @@ class Program
                 return;
         }
 
-        goalManager.AddGoal(newGoal);  
+        goalManager.AddGoal(newGoal);
         Console.WriteLine("Goal added successfully.");
+    }
+
+    static void RecordGoalProgress(GoalManager goalManager)
+    {
+        Console.WriteLine("Enter the index number of the goal to record progress: ");
+        int index = int.Parse(Console.ReadLine());
+        if (index >= 0 && index < goalManager.Goals.Count)
+        {
+            Goal selectedGoal = goalManager.Goals[index];
+            selectedGoal.RecordProgress(); 
+        }
+        else
+        {
+            Console.WriteLine("Invalid index. Please try again.");
+        }
+    }
+
+    static void MarkGoalComplete(GoalManager goalManager)
+    {
+        Console.WriteLine("Enter the index number of the goal to mark as complete: ");
+        int index = int.Parse(Console.ReadLine());
+        if (index >= 0 && index < goalManager.Goals.Count)
+        {
+            Goal selectedGoal = goalManager.Goals[index];
+            selectedGoal.MarkComplete(); 
+            Console.WriteLine($"{selectedGoal.Name} has been marked as complete.");
+        }
+        else
+        {
+            Console.WriteLine("Invalid index. Please try again.");
+        }
     }
 }
