@@ -1,25 +1,30 @@
-using System.Security.Cryptography.X509Certificates;
+public class Cycling : Activity
+{
+    private double _speed; 
 
-public class Cycling: Activity{
+    public double Speed 
+    { 
+        get => _speed; 
+        set => _speed = value; 
+    }
 
-    private double speed;
-
-    public Cycling(string date, int duration, double speed) : base(date, duration){
-        this.speed=speed;
+    public Cycling(string date, int duration, double speed) : base(date, duration)
+    {
+        _speed = speed; 
     }
 
     public override double GetDistance()
     {
-        return (speed * Duration)/60;
+        return _speed * Duration / 60; 
     }
 
     public override double GetSpeed()
     {
-        return speed;
+        return _speed; 
     }
 
     public override double GetPace()
     {
-        return 60/speed;
+        return 60 / _speed; 
     }
 }

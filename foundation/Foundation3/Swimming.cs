@@ -1,23 +1,24 @@
-public class Swimming: Activity{
+public class Swimming : Activity
+{
+    private int _laps; 
 
-        private int laps;
-
-        public Swimming(string date, int duration, int laps) :base(date, duration){
-            this.laps=laps;
-        }
+    public Swimming(string date, int duration, int laps) : base(date, duration)
+    {
+        _laps = laps;
+    }
 
     public override double GetDistance()
     {
-        return (laps*50)/1000.0*0.62;
+        return _laps * 0.025; 
     }
 
     public override double GetSpeed()
     {
-        return (GetDistance()/Duration) * 60;
+        return GetDistance() / Duration * 60; 
     }
 
     public override double GetPace()
     {
-        return Duration/GetDistance();
+        return Duration / _laps; 
     }
 }
